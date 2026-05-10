@@ -6,30 +6,53 @@ name: Release to npm
 on:
   release:
     types: [published]
+  # Manual trigger: useful when you want to retry publish without
+  # deleting/recreating the GitHub release. Provide the version
+  # explicitly; it must match package.json.
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to publish (e.g. 0.1.0). Must match package.json.'
+        required: true
+        type: string
 
 permissions:
   contents: read
-  id-token: write   # required for npm provenance
 
 jobs:
-  publish:
-    name: Build & publish
+  build:
+    name: Build & test
     runs-on: ubuntu-latest
     timeout-minutes: 20
+
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      tarball: ${{ steps.pack.outputs.tarball }}
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Verify tag matches package.json version
+      - name: Determine target version
+        id: version
         run: |
-          TAG="${{ github.event.release.tag_name }}"
-          TAG_VERSION="${TAG#v}"
+          if [ "${{ github.event_name }}" = "release" ]; then
+            RAW="${{ github.event.release.tag_name }}"
+          else
+            RAW="${{ inputs.version }}"
+          fi
+          VERSION="${RAW#v}"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "Target version: $VERSION"
+
+      - name: Verify version matches package.json
+        run: |
           PKG_VERSION=$(node -p "require('./package.json').version")
-          echo "Release tag: $TAG  (version: $TAG_VERSION)"
+          TARGET="${{ steps.version.outputs.version }}"
           echo "package.json: $PKG_VERSION"
-          if [ "$TAG_VERSION" != "$PKG_VERSION" ]; then
-            echo "::error::Tag version ($TAG_VERSION) does not match package.json ($PKG_VERSION). Bump package.json before tagging."
+          echo "target:       $TARGET"
+          if [ "$TARGET" != "$PKG_VERSION" ]; then
+            echo "::error::Version ($TARGET) does not match package.json ($PKG_VERSION). Bump package.json before releasing."
             exit 1
           fi
 
@@ -51,7 +74,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
-          registry-url: https://registry.npmjs.org
           cache: pnpm
 
       - name: Install dependencies
@@ -63,10 +85,56 @@ jobs:
       - name: Test against swetest reference values
         run: pnpm test
 
-      - name: Inspect tarball contents
-        run: npm pack --dry-run
+      - name: Pack tarball
+        id: pack
+        run: |
+          npm pack --json > pack.json
+          TARBALL=$(node -p "require('./pack.json')[0].filename")
+          echo "tarball=$TARBALL" >> "$GITHUB_OUTPUT"
+          echo "Packed: $TARBALL"
+          ls -lh "$TARBALL"
+
+      - name: Upload tarball
+        uses: actions/upload-artifact@v4
+        with:
+          name: npm-tarball
+          path: ${{ steps.pack.outputs.tarball }}
+          retention-days: 30
+          if-no-files-found: error
+
+  publish:
+    name: Publish to npm
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    permissions:
+      contents: read
+      id-token: write   # required for npm provenance
+
+    steps:
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: https://registry.npmjs.org
+
+      - name: Download tarball
+        uses: actions/download-artifact@v4
+        with:
+          name: npm-tarball
+
+      - name: Verify tarball is present
+        run: |
+          TARBALL="${{ needs.build.outputs.tarball }}"
+          if [ ! -f "$TARBALL" ]; then
+            echo "::error::Expected tarball '$TARBALL' not found after download."
+            ls -la
+            exit 1
+          fi
+          echo "Will publish: $TARBALL"
 
       - name: Publish to npm with provenance
-        run: npm publish --provenance --access public
+        run: npm publish "${{ needs.build.outputs.tarball }}" --provenance --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
