@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
+// Copyright (C) 2026 skota.in
+
 /**
  * WASM module loader. Wraps Emscripten's createAstroskModule factory so
  * callers don't need to know about Emscripten internals.

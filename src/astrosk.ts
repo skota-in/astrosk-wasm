@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: AGPL-3.0-or-later
+// Copyright (C) 2026 skota.in
+
 /**
  * Astrosk - main API class. Thin TypeScript wrapper over Swiss Ephemeris
  * compiled to WebAssembly.

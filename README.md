@@ -215,10 +215,17 @@ npm test
 
 ## License
 
-AGPL-3.0-or-later. The Swiss Ephemeris C source is dual-licensed under
-GPL/commercial — for commercial / closed-source distribution contact
-[Astrodienst AG](https://www.astro.com/swisseph/) for a commercial
-license.
+`astrosk-wasm` is licensed under the **GNU Affero General Public License v3.0 or later** (AGPL-3.0-or-later). See [LICENSE](./LICENSE).
+
+This project incorporates the [Swiss Ephemeris](https://github.com/aloistr/swisseph) by Astrodienst AG (© 1997–2021), used under AGPL-3.0. See [NOTICE](./NOTICE) for full attribution.
+
+### A note on the AGPL network clause
+
+Because AGPL-3.0 §13 applies, any public network service that embeds `astrosk-wasm` must offer its users access to the complete corresponding source code of the deployed version. AstroSK satisfies this by making its source publicly available at <https://github.com/skota-in/astrosk> with releases tagged to match deployments.
+
+### Commercial use
+
+If the AGPL is incompatible with your project, you cannot use `astrosk-wasm` directly — you must obtain a [Swiss Ephemeris Professional License](https://www.astro.com/swisseph/) directly from Astrodienst AG and link against the upstream Swiss Ephemeris under that license.
 
 ## Credits
 

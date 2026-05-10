@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# Copyright (C) 2026 skota.in
+#
 # Build astrosk-wasm: compiles Swiss Ephemeris C sources to WebAssembly.
 #
 # Requires: Emscripten SDK activated (source <emsdk>/emsdk_env.sh)
