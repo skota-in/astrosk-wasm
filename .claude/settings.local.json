@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(emcc *)",
+      "Read(//c/emsdk/node//**)",
+      "Bash(export PATH=\"/c/emsdk:/c/emsdk/upstream/emscripten:/c/emsdk/node/$\\(ls /c/emsdk/node/)",
+      "Bash(mkdir -p /tmp/emcc-shim)",
+      "Bash(chmod +x /tmp/emcc-shim/emcc)",
+      "Bash(export PATH=\"/tmp/emcc-shim:/c/emsdk:/c/emsdk/upstream/emscripten:$PATH\")",
+      "Bash(command -v emcc)",
+      "Bash(emcc --version)",
+      "Bash(bash scripts/build.sh)"
+    ]
+  }
+}
