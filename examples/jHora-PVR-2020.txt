@@ -1,0 +1,87 @@
+
+
+Natal Chart
+
+Date:          April 21, 2020
+Time:          7:32:26
+Time Zone:     5:00:00 (West of GMT)
+Place:         93 W 42' 40", 41 N 34' 38"
+               West Des Moines, Iowa, USA
+Altitude:      0.00 meters
+
+Lunar Yr-Mo:   Sharvari - Chaitra
+Tithi:         Krishna Chaturdasi (Ve) (43.96% left)
+Vedic Weekday: Tuesday (Ma)
+Nakshatra:     Revati (Me) (63.06% left)
+Yoga:          Vishkambha (Sa) (96.55% left)
+Karana:        Sakuna (Ve) (87.91% left)
+Hora Lord:     Sun (5 min sign: Le)
+Mahakala Hora: Mars (5 min sign: Aq)
+Kaala Lord:    Mars (Mahakala: Mars)
+
+Sunrise:       6:29:38
+Sunset:        19:57:58
+Janma Ghatis:  2.6168
+
+Ayanamsa:      23-00-21.13
+Sidereal Time: 20:17:45
+
+Body                    Longitude        Nakshatra Pada Rasi Navamsa
+
+Lagna                    1 Ta 27' 35.22" Krit      2    Ta   Cp
+Sun - PK                 8 Ar 52' 02.58" Aswi      3    Ar   Ge
+Moon - BK               21 Pi 35' 33.13" Reva      2    Pi   Cp
+Mars - AmK              22 Cp 04' 54.80" Srav      4    Cp   Cn
+Mercury - AK            24 Pi 45' 40.05" Reva      3    Pi   Aq
+Jupiter - DK             3 Cp 24' 56.20" USha      3    Cp   Aq
+Venus - MK              21 Ta 00' 29.34" Rohi      4    Ta   Cn
+Saturn - GK              8 Cp 38' 44.28" USha      4    Cp   Pi
+Rahu - PiK               9 Ge 19' 56.65" Ardr      1    Ge   Sg
+Ketu                     9 Sg 19' 56.65" Mool      3    Sg   Ge
+Maandi                  29 Cn 58' 11.24" Asre      4    Cn   Pi
+Gulika                  20 Cn 08' 40.53" Asre      2    Cn   Cp
+Bhava Lagna             24 Ar 31' 32.98" Bhar      4    Ar   Sc
+Hora Lagna              10 Ta 13' 36.60" Rohi      1    Ta   Ar
+Ghati Lagna             27 Ge 19' 47.48" Puna      3    Ge   Ge
+Vighati Lagna           22 Aq 50' 41.85" PBha      1    Aq   Ar
+Varnada Lagna            1 Ge 27' 35.22" Mrig      3    Ge   Aq
+Sree Lagna              14 Vi 27' 29.85" Hast      2    Vi   Ta
+Pranapada Lagna         22 Aq 53' 15.07" PBha      1    Aq   Ar
+Indu Lagna              21 Vi 35' 33.13" Hast      4    Vi   Cn
+Bhrigu Bindu             0 Sc 27' 44.89" Visa      4    Sc   Cn
+Dhooma                  22 Le 12' 02.58" PPha      3    Le   Li
+Vyatipata                7 Sc 47' 57.42" Anu       2    Sc   Vi
+Parivesha                7 Ta 47' 57.42" Krit      4    Ta   Pi
+Indra Chapa             22 Aq 12' 02.58" PBha      1    Aq   Ar
+Upaketu                  8 Pi 52' 02.58" UBha      2    Pi   Vi
+Kaala                    9 Vi 37' 11.84" UPha      4    Vi   Pi
+Mrityu                  27 Ar 23' 01.41" Krit      1    Ar   Sg
+Artha Prahara           26 Ta 44' 52.07" Mrig      2    Ta   Vi
+Yama Ghantaka           19 Ge 49' 02.82" Ardr      4    Ge   Pi
+Prana Sphuta            27 Sg 26' 36.63" USha      1    Sg   Sg
+Deha Sphuta             12 Ta 53' 05.60" Rohi      1    Ta   Ar
+Mrityu Sphuta           29 Ta 52' 46.27" Mrig      2    Ta   Vi
+Sookshma TriSphuta      10 Ar 12' 28.50" Aswi      4    Ar   Cn
+Tithi Sphuta            12 Pi 43' 30.56" UBha      3    Pi   Li
+Yoga Sphuta (Sun-Moon)   0 Ar 27' 35.71" Aswi      1    Ar   Ar
+Rahu Tithi Sphuta        0 Ge 27' 54.08" Mrig      3    Ge   Li
+Kshetra Sphuta          17 Li 05' 24.13" Swat      4    Li   Pi
+Beeja Sphuta             3 Pi 17' 28.11" PBha      4    Pi   Cn
+TriSphuta               13 Le 11' 48.88" Magh      4    Le   Cn
+ChatusSphuta            22 Le 03' 51.46" PPha      3    Le   Li
+PanchaSphuta             1 Sc 23' 48.11" Visa      4    Sc   Cn
+V2                       1 Vi 27' 35.22" UPha      2    Vi   Pi
+V3                       1 Li 27' 35.22" Chit      3    Li   Aq
+V4                       1 Cp 27' 35.22" USha      2    Cp   Sc
+V5                       1 Aq 27' 35.22" Dhan      3    Aq   Li
+V6                       1 Ta 27' 35.22" Krit      2    Ta   Cn
+V7                       1 Ge 27' 35.22" Mrig      3    Ge   Aq
+V8                       1 Vi 27' 35.22" UPha      2    Vi   Pi
+V9                       1 Li 27' 35.22" Chit      3    Li   Aq
+V10                      1 Cp 27' 35.22" USha      2    Cp   Cn
+V11                      1 Aq 27' 35.22" Dhan      3    Aq   Li
+V12                      1 Ta 27' 35.22" Krit      2    Ta   Sc
+Kunda                   28 Ar 14' 32.78" Krit      1    Ar   Sg
+Yoga Sphuta              3 Cn 47' 35.71" Push      1    Cn   Le
+Avayoga Sphuta          10 Cp 27' 35.71" Srav      1    Cp   Ar
+

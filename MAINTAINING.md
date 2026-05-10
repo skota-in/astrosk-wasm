@@ -15,11 +15,24 @@ typed-array values from the WASM linear memory.
 
 ## The "source of truth" rule
 
-**Calculation correctness is defined as: outputs match the native
-`swetest` binary built from the same upstream commit.** Whenever you
-change anything that touches `deps/swisseph/`, the verification tests
-in `tests/verify.mjs` MUST still pass. If a test fails, the bug is in
-the WASM build configuration or the JS wrapper, never in the C code.
+**Calculation correctness has two reference sources, used in different
+test sections:**
+
+- **Tropical** values must match native `swetest` built from the same
+  upstream commit. This is the strict "did the WASM compile faithfully"
+  check.
+- **Sidereal True Pushya** ayanamsa + planet longitudes are checked
+  against **Jagannatha Hora chart printouts**, not swetest. Why: JHora
+  is what real consumers compare against, and the swetest default flag
+  set returns the *apparent* ayanamsa (with nutation + aberration on the
+  reference star), which differs from JHora by 2-25 arcsec depending on
+  date and mode. The conventional Vedic value — and what astrosk-wasm
+  defaults to — is the *mean / geometric* ayanamsa via flag
+  `SWIEPH | NONUT | TRUEPOS`. See `tests/verify.mjs` `flagsSid` and the
+  default of `getAyanamsaExUt` in `src/astrosk.ts`.
+
+If a verification test fails, the bug is in the WASM build configuration
+or the JS wrapper, never in the C code.
 
 ## Repository layout
 
@@ -37,9 +50,10 @@ astrosk-wasm/
 │   ├── types.ts
 │   └── index.ts
 ├── tests/
-│   ├── verify.mjs                  # main test runner
-│   ├── reference.swetest.json      # captured swetest C output
-│   └── reference.jhora.json        # JHora True Pushya chart
+│   ├── verify.mjs        # main test runner (regression sweep)
+│   ├── jHora.spec.mjs    # single-date JHora cross-check
+│   ├── reference.json    # fixtures: tropical from swetest, sidereal from JHora
+│   └── README.md         # how to run + how to add a new date case
 ├── wasm/                 # build output (gitignored)
 └── examples/
 ```
@@ -143,24 +157,49 @@ If upstream added new `swe_*` public functions you want to expose:
 
 ### 6. Capture new reference values from upstream
 
+The fixture file is `tests/reference.json`. Tropical numbers come from
+`swetest`; sidereal True Pushya numbers come from JHora chart printouts
+(captured by inspection, not by tool).
+
 ```bash
 cd $UPSTREAM
 make swetest
 
-# Tropical positions (used by reference.swetest.json)
+# Tropical positions
 ./swetest -b15.5.2024 -ut12:00:00 -p0123456789 -fPlbrs -g, \
   -eswe -edirephe/ -head > /tmp/ref-tropical.csv
-
-# Sidereal True Pushya
-./swetest -b10.5.2026 -ut11:32:26 -p0123456789 -fPlbrs -sid29 -g, \
-  -eswe -edirephe/ -head > /tmp/ref-pushya.csv
-
-# Ayanamsa
-./swetest -b10.5.2026 -ut11:32:26 -sid29 -ay29
 ```
 
-Update `tests/reference.swetest.json` with any values that drifted
-(should be 0 difference for any one date — Swiss Ephemeris is stable).
+Update the `tropical_*` fixtures in `tests/reference.json` with any
+values that drifted (should be 0 difference for any one date — Swiss
+Ephemeris is stable).
+
+**Do NOT regenerate the `true_pushya_*` `ayanamsa_deg` values from
+swetest with its default flag.** Swetest's default returns the apparent
+ayanamsa, which is what older versions of this fixture had — and it's
+off by 2-25 arcsec vs JHora. The current values were captured from
+astrosk-wasm itself using the library default flag
+(`SWIEPH | NONUT | TRUEPOS`), which agrees with both native `sweph`
+(Node binding) and JHora to ~10 mas.
+
+If you need to recapture the True Pushya fixtures (e.g. after upstream
+changes the deCnc proper-motion epoch), do it from the wasm:
+
+```js
+import { Astrosk, SE } from 'astrosk-wasm';
+const astrosk = await Astrosk.init();
+// ...load ephe files...
+astrosk.setSidMode(SE.SIDM.TRUE_PUSHYA);
+const jd = astrosk.julday(2026, 5, 10, 11.540555556);
+const ayan = astrosk.getAyanamsaExUt(jd); // uses default SWIEPH|NONUT|TRUEPOS
+const flagsSid = SE.FLG.SWIEPH | SE.FLG.SIDEREAL | SE.FLG.NONUT
+               | SE.FLG.TRUEPOS | SE.FLG.SPEED;
+const sun = astrosk.calcUt(jd, SE.SUN, flagsSid);
+```
+
+If `ayan` shifts more than ~10 mas after an upstream sync, upstream
+changed the deCnc catalog entry or proper-motion epoch — investigate
+before updating the fixture.
 
 ### 7. Build and test
 
