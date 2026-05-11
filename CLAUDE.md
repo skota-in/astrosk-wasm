@@ -77,11 +77,11 @@ If `npm test` fails or a user reports wrong values:
 ## What good looks like
 
 - Tropical Sun longitude on **2024-05-15 12:00 UT** = `55.1447878°`
-  (within 1e-6).
+  (within 1e-6 of native swetest).
 - Sidereal Sun (True Pushya) on **2026-05-10 11:32:26 UT** = `26.7361°`
-  (within 1e-4 of Jagannatha Hora reference, 1e-6 of native swetest).
+  (within 1e-6 of native swetest).
 - Ayanamsa True Pushya on **2026-05-10 11:32:26 UT** = `23.0911°`
-  (within 1e-6 of native swetest, ~3" arcsec from JHora display).
+  (within 1e-6 of native swetest).
 - Build size: WASM ~535 KB, JS loader ~68 KB.
 
 If you observe larger drift, something is wrong — investigate before

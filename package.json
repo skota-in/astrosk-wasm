@@ -29,6 +29,7 @@
     "build:ts": "tsc",
     "build": "npm run build:wasm && npm run build:ts",
     "test": "node tests/verify.mjs",
+    "test:jhora": "node --experimental-strip-types tests/jhora.spec.ts",
     "clean": "rm -rf dist wasm/astrosk.js wasm/astrosk.wasm"
   },
   "keywords": [

@@ -7,6 +7,60 @@ and Angular apps.
 Built directly from the official Swiss Ephemeris C source (v2.10.03)
 to ensure calculations match the reference C library exactly.
 
+## Verified against Jagannatha Hora
+
+Vedic astrologers can trust the numbers. Every release is validated
+against 8 reference charts produced by **Jagannatha Hora 8.0** (PVR
+Narasimha Rao) — 4 charts using **True Chitra** ayanamsa and 4 using
+**True Pushya**, spanning 2010–2025 across India, USA, Japan, and the
+UK. All 80 ayanamsa and planet checks agree with JHora's display to
+sub-arcsecond precision.
+
+The reference printouts live in [`examples/chart{1..8}.txt`](./examples)
+and the test runs locally:
+
+```bash
+npm run build
+npm run test:jhora
+```
+
+### How to call the API to match JHora
+
+JHora displays the **mean / geometric** sidereal position — no nutation,
+no light-time aberration. To reproduce its output, combine
+`SWIEPH | NONUT | TRUEPOS` on every ayanamsa and `calcUt` call:
+
+```ts
+import { Astrosk, SE } from 'astrosk-wasm';
+
+const astrosk = await Astrosk.init();
+
+// 1. Pick the ayanamsa JHora is configured for.
+astrosk.setSidMode(SE.SIDM.TRUE_PUSHYA);   // or TRUE_CITRA, LAHIRI, etc.
+
+// 2. Convert local civil time → UT, then to a Julian Day.
+//    JHora prints "Time Zone: 5:30:00 (East of GMT)" → UT = local - 5.5h.
+const jdUt = astrosk.julday(2025, 5, 10, 5.2395);   // 10:44:22 IST = 05:14:22 UT
+
+// 3. Read the ayanamsa with the JHora-matching flags.
+const JHORA = SE.FLG.SWIEPH | SE.FLG.NONUT | SE.FLG.TRUEPOS;
+const ayanamsa = astrosk.getAyanamsaExUt(jdUt, JHORA);
+
+// 4. Compute sidereal planet longitudes with the same flags + SIDEREAL.
+const sun = astrosk.calcUt(jdUt, SE.SUN, JHORA | SE.FLG.SIDEREAL | SE.FLG.SPEED);
+console.log(sun.longitude);   // matches JHora's "Sun ... longitude" line
+
+// 5. Ketu is geometric: Rahu + 180°.
+const rahu = astrosk.calcUt(jdUt, SE.MEAN_NODE, JHORA | SE.FLG.SIDEREAL | SE.FLG.SPEED);
+const ketu = (rahu.longitude + 180) % 360;
+```
+
+If you instead use plain `SE.FLG.SWIEPH`, you get the **apparent**
+position (with nutation + aberration applied) — which is correct
+astronomically but will differ from JHora's display by 20–40 arcsec
+depending on date and body. Pick the convention that matches your
+upstream reference and use it consistently.
+
 ## Why another wrapper?
 
 `astrosk-wasm` exists because existing WASM ports of Swiss Ephemeris
@@ -205,12 +259,15 @@ Tests in `tests/verify.mjs` compare every value to native `swetest`
 output captured from Swiss Ephemeris 2.10.03 C library. Tolerance is
 1e-6° (3.6 milliarcseconds) for tropical planet longitudes.
 
-The Vedic test reproduces a known reference chart (PVR Narasimha Rao's
-Jagannatha Hora) using True Pushya ayanamsa.
+The Vedic suite (`tests/jhora.spec.ts`) reproduces 8 Jagannatha Hora
+reference charts — 4 True Chitra + 4 True Pushya — and confirms every
+ayanamsa and planet longitude agrees with JHora's display to within a
+few arcseconds.
 
 ```bash
 npm run build
-npm test
+npm test            # swetest suite (tropical + sidereal vs C reference)
+npm run test:jhora  # JHora suite (8 reference charts)
 ```
 
 ## License

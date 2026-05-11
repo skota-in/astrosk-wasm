@@ -38,8 +38,7 @@ astrosk-wasm/
 │   └── index.ts
 ├── tests/
 │   ├── verify.mjs                  # main test runner
-│   ├── reference.swetest.json      # captured swetest C output
-│   └── reference.jhora.json        # JHora True Pushya chart
+│   └── reference.swetest.json      # captured swetest C output
 ├── wasm/                 # build output (gitignored)
 └── examples/
 ```

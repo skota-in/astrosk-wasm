@@ -1,0 +1,87 @@
+Ayanamsa: True Pushya (PVR)
+
+Natal Chart
+
+Date:          May 10, 2025
+Time:          10:44:22
+Time Zone:     8:00:00 (West of GMT)
+Place:         162 W 26' 57", 65 N 53' 40"
+               Chicago Creek, Alaska, USA
+Altitude:      0.00 meters
+
+Lunar Yr-Mo:   Viswa-vasu - Vaisakha
+Tithi:         Sukla Chaturdasi (Ve) (74.69% left)
+Vedic Weekday: Saturday (Sa)
+Nakshatra:     Chitra (Ma) (2.61% left)
+Yoga:          Vyatipata (Ra) (98.00% left)
+Karana:        Garija (Ju) (49.38% left)
+Hora Lord:     Mercury (5 min sign: Vi)
+Mahakala Hora: Jupiter (5 min sign: Cp)
+Kaala Lord:    Rahu (Mahakala: Rahu)
+
+Sunrise:       5:43:05
+Sunset:        23:52:04
+Janma Ghatis:  12.5537
+
+Ayanamsa:      23-04-35.43
+Sidereal Time: 23:09:50
+
+Body                    Longitude        Nakshatra Pada Rasi Navamsa
+
+Lagna                   12 Cn 10' 11.62" Push      3    Cn   Li
+Sun - AmK               27 Ar 16' 53.61" Krit      1    Ar   Sg
+Moon - PK                6 Li 19' 07.02" Chit      4    Li   Sc
+Mars - BK               17 Cn 08' 50.84" Asre      1    Cn   Sg
+Mercury - PiK            7 Ar 23' 25.67" Aswi      3    Ar   Ge
+Jupiter - DK             0 Ge 18' 35.05" Mrig      3    Ge   Li
+Venus - MK              13 Pi 29' 54.58" UBha      4    Pi   Sc
+Saturn - GK              5 Pi 43' 23.61" UBha      1    Pi   Le
+Rahu - AK                1 Pi 32' 54.35" PBha      4    Pi   Cn
+Ketu                     1 Vi 32' 54.35" UPha      2    Vi   Cp
+Maandi                  10 Ge 41' 37.75" Ardr      2    Ge   Cp
+Gulika                  27 Ar 13' 26.95" Krit      1    Ar   Sg
+Bhava Lagna             12 Cn 24' 06.31" Push      3    Cn   Li
+Hora Lagna              27 Vi 43' 26.67" Chit      2    Vi   Vi
+Ghati Lagna             13 Ta 41' 27.75" Rohi      2    Ta   Ta
+Vighati Lagna            3 Cn 31' 33.12" Push      1    Cn   Le
+Varnada Lagna           12 Sg 10' 11.62" Mool      4    Sg   Pi
+Sree Lagna               2 Cn 46' 21.28" Puna      4    Cn   Cn
+Pranapada Lagna          3 Cn 43' 40.78" Push      1    Cn   Le
+Indu Lagna               6 Pi 19' 07.02" UBha      1    Pi   Le
+Bhrigu Bindu            18 Ge 56' 00.69" Ardr      4    Ge   Pi
+Dhooma                  10 Vi 36' 53.61" Hast      1    Vi   Ar
+Vyatipata               19 Li 23' 06.39" Swat      4    Li   Pi
+Parivesha               19 Ar 23' 06.39" Bhar      2    Ar   Vi
+Indra Chapa             10 Pi 36' 53.61" UBha      3    Pi   Li
+Upaketu                 27 Pi 16' 53.61" Reva      4    Pi   Pi
+Kaala                   17 Cn 08' 54.98" Asre      1    Cn   Sg
+Mrityu                  23 Le 23' 31.91" PPha      4    Le   Sc
+Artha Prahara           12 Vi 14' 37.22" Hast      1    Vi   Ar
+Yama Ghantaka            0 Li 56' 13.30" Chit      3    Li   Li
+Prana Sphuta            28 Vi 04' 25.03" Chit      2    Vi   Vi
+Deha Sphuta             17 Ge 46' 23.14" Ardr      4    Ge   Pi
+Mrityu Sphuta            7 Sc 51' 02.25" Anu       2    Sc   Vi
+Sookshma TriSphuta      23 Cn 41' 50.42" Asre      3    Cn   Aq
+Tithi Sphuta             9 Vi 02' 13.41" UPha      4    Vi   Pi
+Yoga Sphuta (Sun-Moon)   3 Sc 36' 00.64" Anu       1    Sc   Le
+Rahu Tithi Sphuta        4 Aq 16' 00.73" Dhan      4    Aq   Sc
+Kshetra Sphuta          23 Pi 46' 32.92" Reva      3    Pi   Aq
+Beeja Sphuta            11 Ge 05' 23.25" Ardr      2    Ge   Cp
+TriSphuta               15 Aq 42' 45.59" Sata      3    Aq   Aq
+ChatusSphuta            12 Pi 59' 39.20" UBha      3    Pi   Li
+PanchaSphuta            14 Aq 32' 33.55" Sata      3    Aq   Aq
+V2                      12 Pi 10' 11.62" UBha      3    Pi   Aq
+V3                      12 Ar 10' 11.62" Aswi      4    Ar   Cn
+V4                      12 Cn 10' 11.62" Push      3    Cn   Li
+V5                      12 Le 10' 11.62" Magh      4    Le   Sc
+V6                      12 Sc 10' 11.62" Anu       3    Sc   Ge
+V7                      12 Sg 10' 11.62" Mool      4    Sg   Pi
+V8                      12 Pi 10' 11.62" UBha      3    Pi   Ge
+V9                      12 Ar 10' 11.62" Aswi      4    Ar   Sc
+V10                     12 Cn 10' 11.62" Push      3    Cn   Li
+V11                     12 Le 10' 11.62" Magh      4    Le   Cn
+V12                     12 Sc 10' 11.62" Anu       3    Sc   Aq
+Kunda                   25 Pi 45' 40.88" Reva      3    Pi   Aq
+Yoga Sphuta              6 Aq 56' 00.64" Sata      1    Aq   Sg
+Avayoga Sphuta          13 Le 36' 00.64" PPha      1    Le   Le
+
