@@ -19,6 +19,12 @@ on:
 permissions:
   contents: read
 
+# GitHub is migrating its JavaScript actions runtime from Node.js 20 to
+# Node.js 24 (default switch on 2026-06-02). Opt in early so the
+# v4 / v14 action tags we use keep running cleanly.
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
 jobs:
   build:
     name: Build & test
