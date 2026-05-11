@@ -25,23 +25,9 @@
 
 **`astrosk-wasm`** ports the official **Swiss Ephemeris C library** (`2.10.03` — the final upstream release) to **WebAssembly**, so you get the *exact same* astronomical math the reference C implementation produces — now usable from the browser, Node, or any modern JS runtime.
 
-```mermaid
-flowchart LR
-    A[Swiss Ephemeris C<br/>v2.10.03 final] -->|Emscripten| B[astrosk.wasm]
-    B --> C[TypeScript wrapper<br/>Astrosk class]
-    C --> D[🌐 Browser]
-    C --> E[🟢 Node.js]
-    C --> F[🅰️ Angular]
-    C --> G[📦 Any JS runtime]
-
-    style A fill:#1e293b,stroke:#8b5cf6,stroke-width:2px,color:#fff
-    style B fill:#7c3aed,stroke:#a78bfa,stroke-width:2px,color:#fff
-    style C fill:#0891b2,stroke:#22d3ee,stroke-width:2px,color:#fff
-    style D fill:#16a34a,stroke:#4ade80,color:#fff
-    style E fill:#16a34a,stroke:#4ade80,color:#fff
-    style F fill:#16a34a,stroke:#4ade80,color:#fff
-    style G fill:#16a34a,stroke:#4ade80,color:#fff
-```
+<p align="center">
+  <img src="https://raw.githubusercontent.com/skota-in/astrosk-wasm/main/docs/diagrams/pipeline.svg" alt="Swiss Ephemeris → Emscripten → WASM → TypeScript wrapper → browser / Node / Angular / any JS runtime">
+</p>
 
 ---
 
@@ -176,32 +162,9 @@ astrosk.close();
 
 One method, three sources — auto-detected.
 
-```mermaid
-flowchart TD
-    A([📞 setEphePath source, options?]) --> B{What kind<br/>of source?}
-
-    B -->|http:// or https://| C[🌐 URL base]
-    B -->|/ephe path inside WASM FS| D[💾 Virtual FS path]
-    B -->|Path exists on Node disk| E[🟢 Node directory]
-    B -->|Anything else| C
-
-    C --> C1[fetch /name for each file]
-    C1 --> F[mod.FS.writeFile /ephe/name, bytes]
-
-    E --> E1[fs.readFile join dir, name]
-    E1 --> F
-
-    D --> G([✅ swe_set_ephe_path /ephe])
-    F --> G
-
-    style A fill:#7c3aed,stroke:#a78bfa,color:#fff,stroke-width:2px
-    style B fill:#1e293b,stroke:#fbbf24,color:#fff,stroke-width:2px
-    style C fill:#0891b2,stroke:#22d3ee,color:#fff
-    style D fill:#0891b2,stroke:#22d3ee,color:#fff
-    style E fill:#0891b2,stroke:#22d3ee,color:#fff
-    style F fill:#16a34a,stroke:#4ade80,color:#fff
-    style G fill:#ec4899,stroke:#f9a8d4,color:#fff,stroke-width:2px
-```
+<p align="center">
+  <img src="https://raw.githubusercontent.com/skota-in/astrosk-wasm/main/docs/diagrams/set-ephe-path.svg" alt="setEphePath dispatch: URL base / virtual FS path / Node directory all feed into swe_set_ephe_path">
+</p>
 
 Default file list (overridable via `{ files: [...] }`):
 
@@ -289,24 +252,9 @@ const astrosk = await Astrosk.init({
 
 The npm package ships with a **minimal set** covering the 9 classical planets (Sun → Pluto) for years **1800–2400 AD**.
 
-```mermaid
-flowchart LR
-    A[🎯 Date range needed] --> B{Year}
-    B -->|1800–2400 AD| C[✅ Bundled .se1]
-    B -->|Wider range| D[⬇️ Fetch from astro.com<br/>or load via setEphePath/<br/>loadEphemerisFile]
-    B -->|Anywhere| E[🧮 Moshier fallback<br/>SE.FLG.MOSEPH]
-
-    C --> Z[🪐 calcUt jd, body, flags]
-    D --> Z
-    E --> Z
-
-    style A fill:#7c3aed,stroke:#a78bfa,color:#fff,stroke-width:2px
-    style B fill:#1e293b,stroke:#fbbf24,color:#fff
-    style C fill:#16a34a,stroke:#4ade80,color:#fff
-    style D fill:#0891b2,stroke:#22d3ee,color:#fff
-    style E fill:#f59e0b,stroke:#fbbf24,color:#fff
-    style Z fill:#ec4899,stroke:#f9a8d4,color:#fff,stroke-width:2px
-```
+<p align="center">
+  <img src="https://raw.githubusercontent.com/skota-in/astrosk-wasm/main/docs/diagrams/ephe-files.svg" alt="Choosing an ephemeris source by date range: bundled .se1 / external download / Moshier fallback">
+</p>
 
 - 🌐 Wider date ranges: download from [astro.com/ftp/swisseph/ephe](https://www.astro.com/ftp/swisseph/ephe/) and pass the directory to `setEphePath` (Node) or host them and pass a URL base (browser).
 - 🛰️ **JPL DE441** (~3 GB): serve `de441.eph` from your CDN, call `setJplFile('de441.eph')`, and use `SE.FLG.JPLEPH`. **Not bundled** because of its size.
@@ -382,29 +330,9 @@ Returns a `Promise<Astrosk>`.
 
 ## 🧪 Verification
 
-```mermaid
-flowchart TB
-    A[🌌 astrosk-wasm release] --> B[🧪 tests/verify.mjs]
-    A --> C[🧪 tests/jhora.spec.ts]
-
-    B --> B1["Compare every value vs.<br/>native swetest CLI<br/>(Swiss Ephemeris 2.10.03 C)"]
-    B1 --> B2[Tolerance: 1e-6° ≈ 3.6 mas]
-
-    C --> C1[8 JHora reference printouts<br/>4 True Chitra · 4 True Pushya]
-    C1 --> C2[80 / 80 ayanamsa + planet checks]
-
-    B2 --> Z([✅ Ship it])
-    C2 --> Z
-
-    style A fill:#7c3aed,stroke:#a78bfa,color:#fff,stroke-width:2px
-    style B fill:#0891b2,stroke:#22d3ee,color:#fff
-    style C fill:#0891b2,stroke:#22d3ee,color:#fff
-    style B1 fill:#1e293b,stroke:#475569,color:#e2e8f0
-    style B2 fill:#1e293b,stroke:#475569,color:#e2e8f0
-    style C1 fill:#1e293b,stroke:#475569,color:#e2e8f0
-    style C2 fill:#1e293b,stroke:#475569,color:#e2e8f0
-    style Z fill:#16a34a,stroke:#4ade80,color:#fff,stroke-width:2px
-```
+<p align="center">
+  <img src="https://raw.githubusercontent.com/skota-in/astrosk-wasm/main/docs/diagrams/verification.svg" alt="Verification pipeline: swetest C-binary parity + 80/80 JHora reference checks per release">
+</p>
 
 ```bash
 🛠  npm run build
