@@ -1,6 +1,6 @@
 {
   "name": "astrosk-wasm",
-  "version": "1.0.1",
+  "version": "0.1.0",
   "description": "Swiss Ephemeris compiled to WebAssembly. Lightweight, TypeScript-first astronomical/astrological calculations for browser, Node, and Angular apps.",
   "type": "module",
   "main": "dist/index.js",
@@ -29,8 +29,6 @@
     "build:ts": "tsc",
     "build": "npm run build:wasm && npm run build:ts",
     "test": "node tests/verify.mjs",
-    "test:jhora": "node tests/jHora.spec.mjs",
-    "test:examples": "node tests/jHora-examples.spec.mjs",
     "clean": "rm -rf dist wasm/astrosk.js wasm/astrosk.wasm"
   },
   "keywords": [

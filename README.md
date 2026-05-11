@@ -42,10 +42,10 @@ console.log('Sun longitude:', sun.longitude); // 49.8273°
 
 // Sidereal (Vedic) - True Pushya ayanamsa (PVR Narasimha Rao)
 astrosk.setSidMode(SE.SIDM.TRUE_PUSHYA);
-const flagsSid =
-  SE.FLG.SWIEPH | SE.FLG.SIDEREAL | SE.FLG.NONUT | SE.FLG.TRUEPOS | SE.FLG.SPEED;
-const sunSid = astrosk.calcUt(jd, SE.SUN, flagsSid);
-console.log('Sun sidereal:', sunSid.longitude); // 26.7408° (matches JHora)
+const sunSid = astrosk.calcUt(
+  jd, SE.SUN, SE.FLG.SWIEPH | SE.FLG.SIDEREAL | SE.FLG.SPEED,
+);
+console.log('Sun sidereal:', sunSid.longitude); // 26.7361°
 
 // Houses (Placidus)
 const houses = astrosk.houses(jd, 42.20278, -71.68611, 'P');
@@ -181,30 +181,9 @@ Options:
 ### Ayanamsa / sidereal
 
 - `setSidMode(mode, t0?, ayan_t0?)`
-- `getAyanamsaUt(jdUt)` → degrees — legacy, always returns the apparent
-  (with-nutation, with-aberration) value. Prefer `getAyanamsaExUt`.
-- `getAyanamsaExUt(jdUt, flags?)` → degrees — **preferred**. Default flag
-  is `SWIEPH | NONUT | TRUEPOS`, which returns the mean / geometric
-  ayanamsa that JHora displays and Vedic astrology software conventionally
-  uses. Override the flag only if you specifically want the apparent
-  (instantaneous, with-nutation) value.
+- `getAyanamsaUt(jdUt)` → degrees
+- `getAyanamsaExUt(jdUt, flags?)` → degrees (preferred)
 - `getAyanamsaName(mode)` → string
-
-#### Flag conventions for body-derived ayanamsas
-
-True Pushya, True Citra, True Revati, True Mula and True Sheoran are all
-defined by the position of a specific fixed star. Their values depend on
-whether you ask for the *apparent* or *true geometric* star position:
-
-| Flag combination | Star position | Ayanamsa style | Matches JHora? |
-|------------------|---------------|----------------|----------------|
-| `SWIEPH` only            | apparent (with nutation + aberration) | "instantaneous" | no (off ~2-6") |
-| `SWIEPH \| NONUT`        | apparent (no nutation, with aberration) | partial | no (off ~3-6") |
-| `SWIEPH \| TRUEPOS`      | geometric (with nutation, no aberration) | partial | no (off ~6") |
-| **`SWIEPH \| NONUT \| TRUEPOS`** | geometric (no nutation, no aberration) | **mean / Vedic** | **yes (≤10 mas)** |
-
-For sidereal `calcUt`, propagate the same flags:
-`SWIEPH | SIDEREAL | NONUT | TRUEPOS | SPEED`.
 
 ### Houses
 
@@ -222,24 +201,16 @@ For sidereal `calcUt`, propagate the same flags:
 
 ## Verification
 
-Tests in `tests/verify.mjs` compare every value to two independent
-reference sources:
+Tests in `tests/verify.mjs` compare every value to native `swetest`
+output captured from Swiss Ephemeris 2.10.03 C library. Tolerance is
+1e-6° (3.6 milliarcseconds) for tropical planet longitudes.
 
-- **Tropical** numbers (planet longitudes, latitudes, distances, deltaT,
-  julday) are checked against native `swetest` output captured from
-  Swiss Ephemeris 2.10.03. Tolerance: 1e-5° (~36 mas).
-- **Sidereal True Pushya** numbers (ayanamsa + sidereal longitudes) are
-  checked against Jagannatha Hora chart printouts (PVR Narasimha Rao).
-  Tolerance: 5" for slow planets, 10" for the Moon.
-
-The Vedic test reproduces three JHora chart printouts to within ~10 mas
-on the ayanamsa and a few arcsec on the planet longitudes — see
-[tests/README.md](./tests/README.md) for the workflow to add new dates.
+The Vedic test reproduces a known reference chart (PVR Narasimha Rao's
+Jagannatha Hora) using True Pushya ayanamsa.
 
 ```bash
 npm run build
-npm test            # verify suite
-npm run test:jhora  # spec-style single-date JHora check
+npm test
 ```
 
 ## License

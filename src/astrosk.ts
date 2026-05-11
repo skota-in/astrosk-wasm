@@ -292,18 +292,8 @@ export class Astrosk {
   /**
    * Ayanamsa with full precision and explicit flags (recommended API since
    * Swiss Ephemeris 2.05). Returns the ayanamsa in degrees; throws on error.
-   *
-   * Default flag is `SWIEPH | NONUT | TRUEPOS` — the mean (no-nutation),
-   * geometric (no-aberration) ayanamsa that JHora displays and that Vedic
-   * astrology software conventionally uses. Plain `SWIEPH` returns the
-   * "apparent" ayanamsa (with nutation + stellar aberration), which is
-   * ~6 arcsec off for tropical-precession ayanamsas like Lahiri and 2–25
-   * arcsec off for body-derived ayanamsas like True Pushya / True Citra.
    */
-  getAyanamsaExUt(
-    jdUt: number,
-    flags: number = SE.FLG.SWIEPH | SE.FLG.NONUT | SE.FLG.TRUEPOS,
-  ): number {
+  getAyanamsaExUt(jdUt: number, flags: number = SE.FLG.SWIEPH): number {
     this.checkOpen();
     const out = this.scratchD6; // reuse 8 bytes of scratch
     const err = this.scratchErr;
