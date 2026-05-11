@@ -134,7 +134,27 @@ jobs:
           fi
           echo "Will publish: $TARBALL"
 
+      # Sigstore's rekor.sigstore.dev transparency log is occasionally
+      # unreachable mid-publish (TLOG_CREATE_ENTRY_ERROR). Retry up to
+      # 3 times before failing; subsequent attempts hit a fresh
+      # endpoint and almost always succeed.
       - name: Publish to npm with provenance
-        run: npm publish "${{ needs.build.outputs.tarball }}" --provenance --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          TARBALL: ${{ needs.build.outputs.tarball }}
+        run: |
+          set -e
+          for attempt in 1 2 3; do
+            echo "::group::npm publish attempt $attempt"
+            if npm publish "$TARBALL" --provenance --access public; then
+              echo "::endgroup::"
+              echo "Published on attempt $attempt"
+              exit 0
+            fi
+            STATUS=$?
+            echo "::endgroup::"
+            echo "::warning::Publish attempt $attempt failed (exit $STATUS). Retrying in 30s..."
+            sleep 30
+          done
+          echo "::error::npm publish failed after 3 attempts."
+          exit 1
