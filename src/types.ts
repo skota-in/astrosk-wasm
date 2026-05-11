@@ -77,3 +77,32 @@ export interface AstroskInitOptions {
    */
   noEphePath?: boolean;
 }
+
+/**
+ * Default ephemeris file set used by `setEphePath` when the caller passes
+ * a URL base (browser). Covers planets + moon (1800-2400 AD), leap seconds,
+ * fixed stars, and orbital elements — enough for sidereal Vedic work.
+ */
+export const DEFAULT_EPHE_FILES = [
+  'sepl_18.se1',
+  'semo_18.se1',
+  'seleapsec.txt',
+  'sefstars.txt',
+  'seorbel.txt',
+] as const;
+
+export interface SetEphePathOptions {
+  /**
+   * Explicit file list to load. Defaults to `DEFAULT_EPHE_FILES`.
+   * In Node disk mode this filters which files in the directory to copy in;
+   * in browser URL mode it controls which names to fetch.
+   */
+  files?: readonly string[];
+
+  /**
+   * If true, missing/404 files are silently skipped instead of throwing.
+   * Defaults to true — Swiss Ephemeris itself tolerates missing optional
+   * tables, and the de facto behavior of consumers has been to ignore them.
+   */
+  optional?: boolean;
+}

@@ -4,8 +4,10 @@ Swiss Ephemeris compiled to WebAssembly. Lightweight, TypeScript-first
 astronomical and astrological calculations for the browser, Node.js,
 and Angular apps.
 
-Built directly from the official Swiss Ephemeris C source (v2.10.03)
-to ensure calculations match the reference C library exactly.
+Built directly from the official Swiss Ephemeris C source — ported from
+the **2.10.03 final release** of the upstream C library — so calculations
+match the reference implementation exactly. The full library and its
+consumers are part of [astrosk.com](https://astrosk.com).
 
 ## Verified against Jagannatha Hora
 
@@ -81,12 +83,11 @@ import { Astrosk, SE } from 'astrosk-wasm';
 
 const astrosk = await Astrosk.init();
 
-// Optional: load ephemeris files for high-precision dates 1800-2400 AD
-const buf = await fetch('/assets/ephe/sepl_18.se1').then(r => r.arrayBuffer());
-astrosk.loadEphemerisFile('sepl_18.se1', new Uint8Array(buf));
-
-const buf2 = await fetch('/assets/ephe/semo_18.se1').then(r => r.arrayBuffer());
-astrosk.loadEphemerisFile('semo_18.se1', new Uint8Array(buf2));
+// Point Swiss Ephemeris at your ephemeris files. The library auto-detects
+// whether the source is a URL base (browser) or a local directory (Node)
+// and copies the default file set into the WASM virtual FS.
+await astrosk.setEphePath('/assets/ephe');           // browser
+// await astrosk.setEphePath('C:/ephe');             // Node, custom dir
 
 // May 10, 2026 11:32:26 UT
 const jd = astrosk.julday(2026, 5, 10, 11.540556);
@@ -128,14 +129,10 @@ export class AstroskService {
     if (this.initPromise) return this.initPromise;
 
     this.initPromise = (async () => {
-      const astrosk = await Astrosk.init({ ephePath: '/ephe' });
-
-      // Load minimal ephemeris (1800-2400 AD)
-      for (const name of ['sepl_18.se1', 'semo_18.se1', 'seleapsec.txt']) {
-        const buf = await fetch(`/assets/ephe/${name}`).then(r => r.arrayBuffer());
-        astrosk.loadEphemerisFile(name, new Uint8Array(buf));
-      }
-
+      const astrosk = await Astrosk.init();
+      // Auto-detects URL base; fetches the default file set in parallel
+      // and writes them into the WASM virtual FS at /ephe.
+      await astrosk.setEphePath('/assets/ephe');
       this.instance = astrosk;
       return astrosk;
     })();
@@ -195,7 +192,8 @@ planets (Sun through Pluto) for years 1800-2400 AD**:
 
 For wider date ranges, download additional `.se1` files from
 [astro.com/ftp/swisseph/ephe](https://www.astro.com/ftp/swisseph/ephe/)
-and load them via `loadEphemerisFile()`.
+and load them via `loadEphemerisFile()` (or place them in the directory
+you pass to `setEphePath` and add their names to the `files` option).
 
 For the JPL DE441 ephemeris (~3 GB), serve `de441.eph` from your CDN
 and call `setJplFile('de441.eph')` then use `SE.FLG.JPLEPH` in calc flags.
@@ -244,11 +242,26 @@ Options:
 - `houses(jdUt, lat, lon, hsys?)` → `HousesResult`
 - `housesEx(jdUt, flags, lat, lon, hsys?)` → `HousesResult`
 
+### Ephemeris sources
+
+- `setEphePath(source, options?)` → `Promise<void>`. Auto-detects the
+  source type:
+  - **URL base** (`/assets/ephe`, `https://...`) → fetches each file in
+    the default list and writes it into the WASM virtual FS.
+  - **Node directory** (`C:/ephe`, `/usr/share/ephe`) → reads from disk
+    via `fs.readFile`.
+  - **Virtual FS path** (`/ephe`) → just points Swiss Ephemeris at an
+    already-populated location (e.g. files staged via `loadEphemerisFile`).
+
+  Options: `{ files?: readonly string[]; optional?: boolean }`. Defaults
+  to `DEFAULT_EPHE_FILES` and silently skips missing files.
+- `loadEphemerisFile(name, bytes)` — low-level: write a single file into
+  the virtual FS. Use this when bytes come from a source `setEphePath`
+  doesn't handle (IndexedDB, in-memory cache, etc.).
+- `setJplFile(name)`
+
 ### Lifecycle
 
-- `setEphePath(path)`
-- `setJplFile(name)`
-- `loadEphemerisFile(name, bytes)`
 - `setTopo(lon, lat, alt?)`
 - `version()`
 - `close()` — frees native scratch buffers; required to avoid leaks

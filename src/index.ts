@@ -36,11 +36,13 @@ export type {
   Planet,
   SidMode,
 } from './constants.js';
+export { DEFAULT_EPHE_FILES } from './types.js';
 export type {
   AstroskInitOptions,
   CalcResult,
   HousesResult,
   JdConversion,
   RevjulResult,
+  SetEphePathOptions,
   UtcDate,
 } from './types.js';

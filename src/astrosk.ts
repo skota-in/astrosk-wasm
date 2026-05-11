@@ -18,13 +18,15 @@
  */
 
 import { loadAstroskModule, type WasmModule } from './loader.js';
-import type {
-  AstroskInitOptions,
-  CalcResult,
-  HousesResult,
-  JdConversion,
-  RevjulResult,
-  UtcDate,
+import {
+  DEFAULT_EPHE_FILES,
+  type AstroskInitOptions,
+  type CalcResult,
+  type HousesResult,
+  type JdConversion,
+  type RevjulResult,
+  type SetEphePathOptions,
+  type UtcDate,
 } from './types.js';
 import { SE, type CalcFlags, type HouseSystem, type Planet, type SidMode } from './constants.js';
 
@@ -72,7 +74,9 @@ export class Astrosk {
 
     const instance = new Astrosk(mod, ephePath);
     if (!options.noEphePath) {
-      instance.setEphePath(ephePath);
+      // Point Swiss Ephemeris at the (empty) virtual dir. Callers populate
+      // it later via `setEphePath(source)` or `loadEphemerisFile`.
+      instance.callStr('swe_set_ephe_path', ephePath);
     }
     return instance;
   }
@@ -81,11 +85,132 @@ export class Astrosk {
   // Configuration
   // -----------------------------------------------------------------
 
-  /** Tell Swiss Ephemeris where to find .se1 files inside the virtual FS. */
-  setEphePath(path: string): void {
+  /**
+   * Point Swiss Ephemeris at a source of ephemeris files and load them.
+   *
+   * Three modes, auto-detected from `source`:
+   *
+   *   1. **Node directory** — an existing local filesystem path
+   *      (e.g. `C:/ephe` or `/usr/share/ephe`). Every requested file is
+   *      read with `fs.readFile` and copied into the WASM virtual FS at
+   *      `/ephe/<name>`.
+   *
+   *   2. **Browser / network URL base** — anything that looks like a URL
+   *      (`http://...`, `https://...`, or a path starting with `/` when
+   *      running in a browser). Files are fetched from
+   *      `<source>/<name>` and written into the virtual FS.
+   *
+   *   3. **Already-mounted virtual FS path** — if `source` is a path that
+   *      already exists inside the WASM FS (e.g. files preloaded via
+   *      `loadEphemerisFile`), no I/O is performed; the path is just
+   *      passed to `swe_set_ephe_path`.
+   *
+   * The internal Swiss Ephemeris path is always set to `/ephe` inside the
+   * virtual FS (regardless of where the source bytes came from).
+   */
+  async setEphePath(source: string, options: SetEphePathOptions = {}): Promise<void> {
     this.checkOpen();
-    this.callStr('swe_set_ephe_path', path);
-    this.ephePath = path;
+    const files = options.files ?? DEFAULT_EPHE_FILES;
+    const optional = options.optional ?? true;
+    const virtualDir = '/ephe';
+
+    this.ensureVirtualDir(virtualDir);
+
+    const mode = await this.classifyEpheSource(source, virtualDir);
+
+    if (mode === 'node') {
+      await this.loadEpheFromNodeDir(source, virtualDir, files, optional);
+    } else if (mode === 'url') {
+      await this.loadEpheFromUrlBase(source, virtualDir, files, optional);
+    }
+    // mode === 'virtual' → files already inside the virtual FS, nothing to copy.
+
+    this.callStr('swe_set_ephe_path', virtualDir);
+    this.ephePath = virtualDir;
+  }
+
+  private ensureVirtualDir(path: string): void {
+    if (!this.mod.FS.analyzePath(path).exists) {
+      try {
+        this.mod.FS.mkdir(path);
+      } catch {
+        // ignore — concurrent or pre-existing
+      }
+    }
+  }
+
+  private async classifyEpheSource(
+    source: string,
+    virtualDir: string,
+  ): Promise<'node' | 'url' | 'virtual'> {
+    if (/^https?:\/\//i.test(source)) return 'url';
+
+    // If it matches the already-set virtual dir or starts with it, treat as virtual.
+    if (source === virtualDir || source.startsWith(`${virtualDir}/`)) {
+      return 'virtual';
+    }
+
+    // In Node, prefer disk if the path exists on the host filesystem.
+    if (isNode()) {
+      try {
+        const fs = await loadNodeFs();
+        const s = await fs.stat(source);
+        if (s.isDirectory()) return 'node';
+      } catch {
+        // not a real directory — fall through
+      }
+    }
+
+    // Browser default: treat as URL base (absolute or relative).
+    return 'url';
+  }
+
+  private async loadEpheFromNodeDir(
+    dir: string,
+    virtualDir: string,
+    files: readonly string[],
+    optional: boolean,
+  ): Promise<void> {
+    const fs = await loadNodeFs();
+    const path = await loadNodePath();
+    await Promise.all(
+      files.map(async (name) => {
+        try {
+          const bytes = await fs.readFile(path.join(dir, name));
+          this.mod.FS.writeFile(`${virtualDir}/${name}`, bytes);
+        } catch (err) {
+          if (!optional) {
+            throw new Error(`astrosk: failed to load ephemeris file ${name}: ${String(err)}`);
+          }
+        }
+      }),
+    );
+  }
+
+  private async loadEpheFromUrlBase(
+    baseUrl: string,
+    virtualDir: string,
+    files: readonly string[],
+    optional: boolean,
+  ): Promise<void> {
+    const base = baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl;
+    await Promise.all(
+      files.map(async (name) => {
+        try {
+          const res = await fetch(`${base}/${name}`);
+          if (!res.ok) {
+            if (optional) return;
+            throw new Error(`HTTP ${res.status}`);
+          }
+          const buf = new Uint8Array(await res.arrayBuffer());
+          this.mod.FS.writeFile(`${virtualDir}/${name}`, buf);
+        } catch (err) {
+          if (!optional) {
+            throw new Error(`astrosk: failed to fetch ephemeris file ${name}: ${String(err)}`);
+          }
+        }
+      }),
+    );
   }
 
   /** Set the JPL ephemeris file name (default 'de441.eph' if used). */
@@ -446,4 +571,35 @@ export class Astrosk {
       this.mod._free(ptr);
     }
   }
+}
+
+// -----------------------------------------------------------------
+// Node-only helpers. Typed via duck-typing so the package does not
+// need @types/node — astrosk-wasm targets the browser primarily.
+// -----------------------------------------------------------------
+
+interface NodeFsLike {
+  readFile(path: string): Promise<Uint8Array>;
+  stat(path: string): Promise<{ isDirectory(): boolean }>;
+}
+
+interface NodePathLike {
+  join(...parts: string[]): string;
+}
+
+function isNode(): boolean {
+  const g = globalThis as { process?: { versions?: { node?: string } } };
+  return typeof g.process !== 'undefined' && !!g.process.versions?.node;
+}
+
+async function loadNodeFs(): Promise<NodeFsLike> {
+  // String concatenation defeats bundler static-analysis so browser builds
+  // don't try to resolve 'node:fs/promises'.
+  const spec = 'node:' + 'fs/promises';
+  return (await import(/* @vite-ignore */ spec)) as NodeFsLike;
+}
+
+async function loadNodePath(): Promise<NodePathLike> {
+  const spec = 'node:' + 'path';
+  return (await import(/* @vite-ignore */ spec)) as NodePathLike;
 }
