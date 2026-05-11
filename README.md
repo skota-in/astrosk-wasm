@@ -65,9 +65,9 @@ upstream reference and use it consistently.
 
 ## Why another wrapper?
 
-`astrosk-wasm` exists because existing WASM ports of Swiss Ephemeris
-were producing wrong values for ayanamsa and planet positions. This
-library is verified against the native C `swetest` binary on every
+`astrosk-wasm` is verified against Jagannatha Hora — every release is
+checked against 8 JHora reference charts (4 True Chitra + 4 True Pushya)
+spanning 2010–2025, and against the native C `swetest` binary on every
 build (see `tests/verify.mjs`).
 
 ## Install
